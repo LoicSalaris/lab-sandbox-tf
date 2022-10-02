@@ -9,7 +9,7 @@ locals {
 }
 
 module "networking" {
-  source = "modules/networking"
+  source = "./modules/networking"
 
   region               = var.aws_region
   environment          = var.environment

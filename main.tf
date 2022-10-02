@@ -21,9 +21,6 @@ terraform {
 
 }
 
-provider "aws" {
-  region = "us-west-2"
-}
 
 resource "random_pet" "sg" {}
 
@@ -43,29 +40,28 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
+  instance_type          = var.instance_type
+  subnet_id              = module.networking.public_subnets_id[0]
+  vpc_security_group_ids = [module.networking.default_sg_id]
   tags = {
     Name = var.instance_name
   }
   user_data = file("./scripts/setup.sh")
 }
 
-resource "aws_security_group" "web-sg" {
-  name = "${random_pet.sg.id}-sg"
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  // connectivity to ubuntu mirrors is required to run `apt-get update` and `apt-get install apache2`
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+# PostgreSQL DB Instance
+resource "aws_instance" "pgsql" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = var.instance_type
+  user_data = templatefile("./scripts/postgresql/install_postgres.sh", {
+    pg_hba_file = templatefile("./scripts/postgresql/pg_hba.conf", { allowed_ip = "0.0.0.0/0" }),
+  })
+
+  subnet_id                   = module.networking.private_subnets_id[0]
+  vpc_security_group_ids      = [module.networking.allow_postgresql_sg_id]
+  tags = {
+    Name = var.instance_db_name
   }
 }

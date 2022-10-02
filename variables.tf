@@ -20,9 +20,9 @@ variable "instance_db_name" {
 }
 
 variable "environment" {
-    description = "Environment the resource is in"
-    type        = string
-    default     = "dev"
+  description = "Environment the resource is in"
+  type        = string
+  default     = "dev"
 }
 
 variable "vpc_cidr" {

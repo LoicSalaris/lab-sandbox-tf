@@ -43,7 +43,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = module.networking.public_subnets_id[0]
+  subnet_id              = flatten(module.networking.public_subnets_id)[0]
   vpc_security_group_ids = [module.networking.default_sg_id]
   tags = {
     Name = var.instance_name
@@ -59,7 +59,7 @@ resource "aws_instance" "pgsql" {
     pg_hba_file = templatefile("./scripts/postgresql/pg_hba.conf", { allowed_ip = "0.0.0.0/0" }),
   })
 
-  subnet_id              = module.networking.private_subnets_id[0]
+  subnet_id              = flatten(module.networking.private_subnets_id)[0]
   vpc_security_group_ids = [module.networking.allow_postgresql_sg_id]
   tags = {
     Name = var.instance_db_name

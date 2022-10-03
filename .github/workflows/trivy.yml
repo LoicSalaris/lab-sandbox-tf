@@ -29,37 +29,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      #      - name: Build an image from Dockerfile
-      #        run: |
-      #          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
-      #
-      #      - name: Run Trivy vulnerability scanner in docker mode
-      #        uses: aquasecurity/trivy-action@master
-      #        with:
-      #          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-      #          format: 'template'
-      #          template: '@/contrib/sarif.tpl'
-      #          output: 'trivy-results-docker.sarif'
-      #          severity: 'CRITICAL'
-      #
-      #      - name: Upload Trivy scan results to GitHub Security tab
-      #        uses: github/codeql-action/upload-sarif@v1
-      #        with:
-      #          sarif_file: 'trivy-results-docker.sarif'
-
-      - name: Run Trivy vulnerability scanner in fs mode
-        uses: anandg112/trivy-action@feat/add-skip-dirs-option
+      - name: Run static analysis
+        uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
+          security-checks: 'vuln,secret,config'
           ignore-unfixed: true
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results-fs.sarif'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
           severity: 'CRITICAL'
-          skip-dirs: "ignored-dir"
+
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results-fs.sarif'
+          sarif_file: 'trivy-results.sarif'
+          category: 'code'

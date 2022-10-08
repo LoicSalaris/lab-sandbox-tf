@@ -44,7 +44,7 @@ resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   subnet_id              = flatten(module.networking.public_subnets_id)[0]
-  vpc_security_group_ids = [module.networking.default_sg_id]
+  vpc_security_group_ids = [module.networking.allow_http_sg_id]
   tags = {
     Name = var.instance_name
   }

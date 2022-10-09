@@ -44,6 +44,7 @@ resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   subnet_id              = flatten(module.networking.public_subnets_id)[0]
+  key_name               = "tf-lab-api"
   vpc_security_group_ids = [module.networking.allow_http_sg_id]
   tags = {
     Name = var.instance_name
@@ -55,6 +56,7 @@ resource "aws_instance" "app" {
 resource "aws_instance" "pgsql" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
+  key_name      = "tf-lab-api-private-pgsql"
   user_data = templatefile("./scripts/postgresql/install_postgres.sh", {
     pg_hba_file = templatefile("./scripts/postgresql/pg_hba.conf", { allowed_ip = "0.0.0.0/0" }),
   })

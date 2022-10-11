@@ -42,3 +42,8 @@ variable "aws_availability_zone" {
   type    = string
   default = "us-west-2a"
 }
+
+variable "key_name_app" {
+  type    = string
+  default = "tf-lab-api"
+}

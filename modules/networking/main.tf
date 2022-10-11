@@ -171,10 +171,10 @@ resource "aws_security_group" "allowHttp" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = aws_subnet.private_subnet.*.cidr_block
   }
 }
 
@@ -193,10 +193,18 @@ resource "aws_security_group" "allowPostgreSQL" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 5432
+      to_port     = 5432
+      protocol    = "tcp"
+      cidr_blocks = aws_subnet.public_subnet.*.cidr_block
+  }
+
+  ingress {
+    description = "SSH from VPC"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = aws_subnet.public_subnet.*.cidr_block
   }
 }
 

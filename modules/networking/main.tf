@@ -185,6 +185,14 @@ resource "aws_security_group" "allowPostgreSQL" {
   depends_on  = [aws_vpc.vpc]
 
   ingress {
+    description = "SSH from VPC"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = aws_subnet.public_subnet.*.cidr_block
+  }
+
+  ingress {
     description = "TCP from VPC"
     from_port   = 5432
     to_port     = 5432
@@ -193,18 +201,10 @@ resource "aws_security_group" "allowPostgreSQL" {
   }
 
   egress {
-      from_port   = 5432
-      to_port     = 5432
-      protocol    = "tcp"
-      cidr_blocks = aws_subnet.public_subnet.*.cidr_block
-  }
-
-  ingress {
-    description = "SSH from VPC"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = aws_subnet.public_subnet.*.cidr_block
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 

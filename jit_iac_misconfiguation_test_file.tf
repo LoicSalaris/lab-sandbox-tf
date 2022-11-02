@@ -3,11 +3,6 @@ resource "aws_lb_listener" "listener6" {
   port = 80
   default_action {
     type = "redirect"
-    redirect {
-      port        = "80"
-      protocol    = "HTTP"
-      status_code = "HTTP_301"
-    }
   }
 }
 resource "aws_lb" "test3" {
